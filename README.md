@@ -130,8 +130,9 @@ automatically, so you don't need to install it system-wide.
 - `SnapFloat-1.0.0-win-x64-portable.zip`
 - `SnapFloat-Setup-1.0.0.exe`
 
-**Releasing:** run `build.ps1 -Version 1.0.1` and attach `SnapFloat-Setup-1.0.1.exe` and the portable zip to a
-GitHub Release tagged `v1.0.1`.
+**Releasing:** push a tag such as `v1.0.1`. The GitHub Actions workflow (`.github/workflows/build.yml`) runs the
+tests, builds the installer and portable zip with that version number, and attaches them to a GitHub Release.
+Every push and pull request runs the same build without publishing.
 
 **Demo video:** the README clip is a real recording. `tools/demo/record_demo.py` drives a take on a real desktop
 (Terminal, Claude Code, Win+Shift+S, drag and drop) while ffmpeg records it, and `tools/demo/edit_demo.py` adds the
@@ -171,6 +172,7 @@ tests/SnapFloat.Core.Tests  xUnit (79 tests)
 installer/SnapFloat.iss     Inno Setup script (per-user, no admin)
 docs/DESIGN.md              visual design specification
 docs/media/                 README demo video (recorded and edited with tools/demo)
+.github/workflows/build.yml CI build, tests and tag-based releases
 ```
 
 Key decisions:
