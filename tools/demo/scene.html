@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<title>Revenue · Dashboard</title>
+<!-- Demo scene for the README recording: a small dashboard with a visible layout bug (the legend overlaps the
+     chart) so the clip has a real reason to show Claude a screenshot. -->
+<style>
+  :root { --ink:#16171d; --muted:#6b6f80; --line:#ececf2; --indigo:#5b5bd6; --indigo2:#8e93ef; --amber:#f2a33a; --teal:#1fb4a3; }
+  * { box-sizing:border-box; margin:0; }
+  html, body { height:100%; }
+  body { font-family:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif; background:#f5f6fa; color:var(--ink);
+         display:grid; grid-template-columns:200px 1fr; }
+  nav { background:#fff; border-right:1px solid var(--line); padding:22px 14px; }
+  .brand { display:flex; gap:10px; align-items:center; font-weight:650; font-size:15px; margin:0 6px 26px; }
+  .logo { width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg,#7c7cf2,#5b5bd6); }
+  nav a { display:flex; gap:10px; align-items:center; padding:9px 10px; border-radius:8px; color:var(--muted);
+          text-decoration:none; font-size:13.5px; margin-bottom:2px; cursor:default; }
+  nav a i { width:14px; height:14px; border-radius:4px; background:#d9dae4; }
+  nav a.on { background:#eef0fd; color:var(--indigo); font-weight:600; }
+  nav a.on i { background:var(--indigo); }
+  main { padding:26px 30px; overflow:hidden; }
+  header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  h1 { font-size:21px; font-weight:650; letter-spacing:-.2px; }
+  .sub { color:var(--muted); font-size:13px; margin-top:3px; }
+  .btn { background:var(--indigo); color:#fff; border:0; border-radius:9px; padding:9px 16px; font:600 13px inherit; }
+  .kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:16px; }
+  .kpi { background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .kpi small { color:var(--muted); font-size:12px; }
+  .kpi b { display:block; font-size:22px; margin-top:4px; letter-spacing:-.3px; }
+  .up { color:#14996f; font-size:12px; font-weight:600; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; position:relative; }
+  .card h2 { font-size:14.5px; font-weight:650; }
+  .tabs { position:absolute; right:18px; top:14px; display:flex; background:#f3f4f8; border-radius:8px; padding:3px; }
+  .tabs span { font-size:12px; padding:5px 10px; border-radius:6px; color:var(--muted); }
+  .tabs span.on { background:#fff; color:var(--ink); font-weight:600; box-shadow:0 1px 2px #0001; }
+  .chart { height:250px; display:flex; align-items:flex-end; gap:16px; padding:22px 6px 0; border-bottom:1px solid var(--line); }
+  .bar { flex:1; border-radius:7px 7px 3px 3px; background:var(--indigo2); position:relative; }
+  .bar.b { background:var(--indigo); }
+  .bar.hi { background:var(--amber); }
+  /* The bug: the legend is absolutely positioned and sits on top of the bars. */
+  .legend { position:absolute; left:40%; top:96px; display:flex; gap:16px; background:#fff; padding:8px 12px;
+            border-radius:8px; box-shadow:0 2px 10px #0000001a; font-size:12px; color:var(--muted); }
+  .legend i { display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+  .months { display:flex; gap:16px; padding:8px 6px 0; color:var(--muted); font-size:11.5px; }
+  .months span { flex:1; text-align:center; }
+</style>
+</head>
+<body>
+  <nav>
+    <div class="brand"><div class="logo"></div>Northwind</div>
+    <a><i></i>Overview</a>
+    <a class="on"><i></i>Revenue</a>
+    <a><i></i>Customers</a>
+    <a><i></i>Products</a>
+    <a><i></i>Reports</a>
+    <a><i></i>Settings</a>
+  </nav>
+  <main>
+    <header>
+      <div><h1>Revenue</h1><div class="sub">Last 12 months · all regions</div></div>
+      <button class="btn">Export</button>
+    </header>
+    <section class="kpis">
+      <div class="kpi"><small>Total revenue</small><b>$482,910</b><span class="up">▲ 12.4%</span></div>
+      <div class="kpi"><small>Avg. order</small><b>$86.20</b><span class="up">▲ 3.1%</span></div>
+      <div class="kpi"><small>New customers</small><b>1,284</b><span class="up">▲ 8.7%</span></div>
+    </section>
+    <section class="card">
+      <h2>Monthly revenue</h2>
+      <div class="tabs"><span>Week</span><span class="on">Month</span><span>Year</span></div>
+      <div class="legend"><span><i style="background:var(--indigo)"></i>Online</span><span><i style="background:var(--indigo2)"></i>Retail</span><span><i style="background:var(--amber)"></i>Best month</span></div>
+      <div class="chart">
+        <div class="bar" style="height:42%"></div><div class="bar b" style="height:55%"></div>
+        <div class="bar" style="height:48%"></div><div class="bar b" style="height:66%"></div>
+        <div class="bar" style="height:58%"></div><div class="bar b" style="height:74%"></div>
+        <div class="bar" style="height:63%"></div><div class="bar hi" style="height:92%"></div>
+        <div class="bar" style="height:70%"></div><div class="bar b" style="height:79%"></div>
+        <div class="bar" style="height:61%"></div><div class="bar b" style="height:84%"></div>
+      </div>
+      <div class="months"><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span></div>
+    </section>
+  </main>
+</body>
+</html>

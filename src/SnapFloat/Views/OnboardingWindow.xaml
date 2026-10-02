@@ -1,0 +1,89 @@
+<Window x:Class="SnapFloat.Views.OnboardingWindow" x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:SnapFloat.Views"
+        Title="Welcome to SnapFloat" Width="520" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource Brush.Window}"
+        FontFamily="{StaticResource Font.UI}" FontSize="{StaticResource Font.Body}" Foreground="{DynamicResource Brush.Text}"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Display"
+        Icon="pack://application:,,,/SnapFloat;component/Assets/SnapFloat.ico">
+    <Window.Resources>
+        <Style x:Key="StepBadge" TargetType="Border">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="Background" Value="{DynamicResource Brush.AccentSubtle}" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style x:Key="Key" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.BorderStrong}" />
+            <Setter Property="BorderThickness" Value="1,1,1,2" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="6,1" />
+            <Setter Property="Margin" Value="0,0,4,0" />
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="32,28,32,24">
+        <StackPanel Orientation="Horizontal">
+            <Image Source="pack://application:,,,/SnapFloat;component/Assets/SnapFloat-256.png" Width="44" Height="44" RenderOptions.BitmapScalingMode="HighQuality" />
+            <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource Text.Title}" Text="SnapFloat is ready" />
+                <TextBlock Style="{StaticResource Text.Secondary}" Text="Screenshots you can drag straight into Claude Code." />
+            </StackPanel>
+        </StackPanel>
+
+        <Border Style="{StaticResource Card}" Margin="0,24,0,0" Padding="18,6">
+            <StackPanel>
+                <DockPanel Margin="0,12">
+                    <Border Style="{StaticResource StepBadge}">
+                        <v:IconView Geometry="{StaticResource Icon.Scan}" Size="18" Foreground="{DynamicResource Brush.AccentForeground}" />
+                    </Border>
+                    <StackPanel Margin="14,0,0,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontWeight="SemiBold" Text="Take a screenshot" />
+                        <WrapPanel Margin="0,4,0,0">
+                            <Border Style="{StaticResource Key}"><TextBlock Text="Win" FontSize="12" /></Border>
+                            <Border Style="{StaticResource Key}"><TextBlock Text="Shift" FontSize="12" /></Border>
+                            <Border Style="{StaticResource Key}"><TextBlock Text="S" FontSize="12" /></Border>
+                            <TextBlock Style="{StaticResource Text.Secondary}" Margin="4,1,8,0" Text="as usual, or" />
+                            <Border Style="{StaticResource Key}"><TextBlock x:Name="RegionKeys" Text="Ctrl + Shift + 4" FontSize="12" /></Border>
+                        </WrapPanel>
+                    </StackPanel>
+                </DockPanel>
+                <Border Height="1" Background="{DynamicResource Brush.Border}" />
+                <DockPanel Margin="0,12">
+                    <Border Style="{StaticResource StepBadge}">
+                        <v:IconView Geometry="{StaticResource Icon.Pointer}" Size="18" Foreground="{DynamicResource Brush.AccentForeground}" />
+                    </Border>
+                    <StackPanel Margin="14,0,0,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontWeight="SemiBold" Text="Drag the preview" />
+                        <TextBlock Style="{StaticResource Text.Secondary}" Margin="0,2,0,0"
+                                   Text="A thumbnail appears in the corner. Drop it into Claude Code, Windows Terminal, VS Code, a chat or Explorer. It arrives as a real PNG file." />
+                    </StackPanel>
+                </DockPanel>
+                <Border Height="1" Background="{DynamicResource Brush.Border}" />
+                <DockPanel Margin="0,12">
+                    <Border Style="{StaticResource StepBadge}">
+                        <v:IconView Geometry="{StaticResource Icon.Copy}" Size="18" Foreground="{DynamicResource Brush.AccentForeground}" />
+                    </Border>
+                    <StackPanel Margin="14,0,0,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontWeight="SemiBold" Text="Click for quick actions" />
+                        <TextBlock Style="{StaticResource Text.Secondary}" Margin="0,2,0,0"
+                                   Text="Copy the image or its path, open, pin or delete. Double-click opens it; right-click shows everything." />
+                    </StackPanel>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+
+        <CheckBox x:Name="StartupCheck" Style="{StaticResource CheckBox.Plain}" Margin="2,20,0,0" IsChecked="True"
+                  Content="Start SnapFloat when I sign in to Windows" />
+        <TextBlock Style="{StaticResource Text.Secondary}" Margin="30,4,0,0"
+                   Text="It runs quietly in the notification area. You can change this any time in Settings." />
+
+        <DockPanel Margin="0,24,0,0" LastChildFill="False">
+            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Content="Get started" MinWidth="120" IsDefault="True" Click="OnDone" />
+            <Button DockPanel.Dock="Right" Content="Open settings" Margin="0,0,8,0" Click="OnSettings" />
+        </DockPanel>
+    </StackPanel>
+</Window>

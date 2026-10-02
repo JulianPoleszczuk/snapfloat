@@ -1,0 +1,481 @@
+<Window x:Class="SnapFloat.Views.SettingsWindow" x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:SnapFloat.Views"
+        Title="SnapFloat Settings" Width="860" Height="620" MinWidth="700" MinHeight="480"
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource Brush.Window}"
+        FontFamily="{StaticResource Font.UI}" FontSize="{StaticResource Font.Body}" Foreground="{DynamicResource Brush.Text}"
+        UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display"
+        Icon="pack://application:,,,/SnapFloat;component/Assets/SnapFloat.ico">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <v:NullToCollapsedConverter x:Key="NullToCollapsed" />
+        <Style x:Key="RowTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}" />
+        <Style x:Key="RowDesc" TargetType="TextBlock" BasedOn="{StaticResource Text.Secondary}">
+            <Setter Property="Margin" Value="0,2,0,0" />
+        </Style>
+        <Style x:Key="Page" TargetType="StackPanel">
+            <Setter Property="Margin" Value="32,24,32,32" />
+            <Setter Property="MaxWidth" Value="760" />
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+        <Style x:Key="ValueLabel" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
+            <Setter Property="MinWidth" Value="52" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ============================ Sidebar ============================ -->
+        <Border Background="{DynamicResource Brush.Sidebar}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+            <DockPanel Margin="12,18,12,14">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8,0,0,22">
+                    <Image Source="pack://application:,,,/SnapFloat;component/Assets/SnapFloat-256.png" Width="28" Height="28"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="SnapFloat" FontWeight="SemiBold" FontSize="{StaticResource Font.Subtitle}" />
+                        <TextBlock Text="Screenshot previews" Style="{StaticResource Text.Secondary}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel x:Name="Nav" KeyboardNavigation.DirectionalNavigation="Cycle" AutomationProperties.Name="Settings sections">
+                    <RadioButton x:Name="NavGeneral" Style="{StaticResource NavItem}" GroupName="Nav" Tag="{StaticResource Icon.Sliders}" Content="General" IsChecked="True" Checked="OnNav" />
+                    <RadioButton x:Name="NavCapture" Style="{StaticResource NavItem}" GroupName="Nav" Tag="{StaticResource Icon.Scan}" Content="Capture" Checked="OnNav" />
+                    <RadioButton x:Name="NavAppearance" Style="{StaticResource NavItem}" GroupName="Nav" Tag="{StaticResource Icon.Contrast}" Content="Appearance" Checked="OnNav" />
+                    <RadioButton x:Name="NavStorage" Style="{StaticResource NavItem}" GroupName="Nav" Tag="{StaticResource Icon.Drive}" Content="Storage" Checked="OnNav" />
+                    <RadioButton x:Name="NavAbout" Style="{StaticResource NavItem}" GroupName="Nav" Tag="{StaticResource Icon.Info}" Content="About" Checked="OnNav" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- ============================ Pages ============================ -->
+        <ScrollViewer x:Name="Scroller" Grid.Column="1" VerticalScrollBarVisibility="Auto" Focusable="False">
+            <Grid>
+                <!-- ======== General ======== -->
+                <StackPanel x:Name="PageGeneral" Style="{StaticResource Page}" Visibility="Visible">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="General" />
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Startup" />
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <CheckBox DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" IsChecked="{Binding LaunchAtStartup}"
+                                              AutomationProperties.Name="Start SnapFloat when I sign in to Windows" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Start when I sign in to Windows" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="SnapFloat starts quietly in the notification area." />
+                                        <Border Style="{StaticResource InlineError}" Visibility="{Binding StartupError, Converter={StaticResource NullToCollapsed}}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <v:IconView Geometry="{StaticResource Icon.Alert}" Size="14" Foreground="{DynamicResource Brush.Danger}" />
+                                                <TextBlock Margin="8,0,0,0" Style="{StaticResource Text.Body}" Text="{Binding StartupError}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow.Last}">
+                                <DockPanel>
+                                    <CheckBox DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" IsChecked="{Binding StartMinimized}"
+                                              AutomationProperties.Name="Start in the background" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Start in the background" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Don't open this window when SnapFloat starts." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Previews" />
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <CheckBox DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" IsChecked="{Binding ShowPreviews}"
+                                              AutomationProperties.Name="Show screenshot previews" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Show screenshot previews" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="A floating thumbnail you can drag into Claude Code, a terminal, an IDE or a chat." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <CheckBox DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" IsChecked="{Binding AutoClosePreviews}"
+                                              AutomationProperties.Name="Close previews automatically" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Close previews automatically" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Hovering, dragging or pinning keeps a preview open." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}" IsEnabled="{Binding AutoClosePreviews}">
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource ValueLabel}" Text="{Binding PreviewDurationText}" />
+                                        <Slider Minimum="{Binding MinDuration}" Maximum="{Binding MaxDuration}" Value="{Binding PreviewDuration}"
+                                                SmallChange="1" LargeChange="5" IsSnapToTickEnabled="True" TickFrequency="1"
+                                                AutomationProperties.Name="Preview duration in seconds" />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Preview duration" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="How long a preview stays before fading out." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding CornerOptions}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                                              SelectedValue="{Binding PreviewCorner}" AutomationProperties.Name="Preview position" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Preview position" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Corner of the screen where the screenshot was taken." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow.Last}">
+                                <DockPanel>
+                                    <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding WatchOptions}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                                              SelectedValue="{Binding WatchMode}" AutomationProperties.Name="Show previews for" />
+                                    <StackPanel Margin="0,0,16,0">
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Show previews for" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Windows screenshots = Win + Shift + S, Snipping Tool and Print Screen." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- ======== Capture ======== -->
+                <StackPanel x:Name="PageCapture" Style="{StaticResource Page}">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="Capture" />
+
+                    <Border Style="{StaticResource Card}" Margin="0,18,0,0" Background="{DynamicResource Brush.AccentSubtle}" BorderThickness="0">
+                        <DockPanel Margin="16,12">
+                            <v:IconView DockPanel.Dock="Left" Geometry="{StaticResource Icon.Info}" Size="18" Foreground="{DynamicResource Brush.AccentForeground}" VerticalAlignment="Top" />
+                            <TextBlock Margin="12,0,0,0" Style="{StaticResource Text.Body}">
+                                <Run FontWeight="SemiBold" Text="Win + Shift + S keeps working." />
+                                <Run Text="SnapFloat picks up every Windows snip automatically. The shortcuts below are optional extras." />
+                            </TextBlock>
+                        </DockPanel>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Shortcuts" />
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Border Style="{StaticResource CardRow}">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <v:HotkeyBox DockPanel.Dock="Right" HotkeyText="{Binding RegionHotkey}" AutomationProperties.Name="Capture region shortcut" />
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource RowTitle}" Text="Capture region" />
+                                            <TextBlock Style="{StaticResource RowDesc}" Text="Opens the Windows snipping overlay." />
+                                        </StackPanel>
+                                    </DockPanel>
+                                    <Border Style="{StaticResource InlineError}" Visibility="{Binding RegionError, Converter={StaticResource NullToCollapsed}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <v:IconView Geometry="{StaticResource Icon.Alert}" Size="14" Foreground="{DynamicResource Brush.Danger}" />
+                                            <TextBlock Margin="8,0,0,0" Style="{StaticResource Text.Body}" Text="{Binding RegionError}" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <v:HotkeyBox DockPanel.Dock="Right" HotkeyText="{Binding FullScreenHotkey}" AutomationProperties.Name="Capture full screen shortcut" />
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource RowTitle}" Text="Capture full screen" />
+                                            <TextBlock Style="{StaticResource RowDesc}" Text="Captures the display under the mouse pointer." />
+                                        </StackPanel>
+                                    </DockPanel>
+                                    <Border Style="{StaticResource InlineError}" Visibility="{Binding FullScreenError, Converter={StaticResource NullToCollapsed}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <v:IconView Geometry="{StaticResource Icon.Alert}" Size="14" Foreground="{DynamicResource Brush.Danger}" />
+                                            <TextBlock Margin="8,0,0,0" Style="{StaticResource Text.Body}" Text="{Binding FullScreenError}" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <v:HotkeyBox DockPanel.Dock="Right" HotkeyText="{Binding WindowHotkey}" AutomationProperties.Name="Capture active window shortcut" />
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource RowTitle}" Text="Capture active window" />
+                                            <TextBlock Style="{StaticResource RowDesc}" Text="Captures the window you're working in." />
+                                        </StackPanel>
+                                    </DockPanel>
+                                    <Border Style="{StaticResource InlineError}" Visibility="{Binding WindowError, Converter={StaticResource NullToCollapsed}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <v:IconView Geometry="{StaticResource Icon.Alert}" Size="14" Foreground="{DynamicResource Brush.Danger}" />
+                                            <TextBlock Margin="8,0,0,0" Style="{StaticResource Text.Body}" Text="{Binding WindowError}" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow.Last}" MinHeight="0" Padding="16,10">
+                                <TextBlock Style="{StaticResource Text.Secondary}" Text="Click a shortcut and press new keys. Backspace removes it, Esc cancels." />
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Files" />
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding FormatOptions}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                                              SelectedValue="{Binding ImageFormat}" AutomationProperties.Name="Image format" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Image format" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="PNG keeps text perfectly sharp and is best for AI tools." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}" Visibility="{Binding IsJpeg, Converter={StaticResource BoolToVis}}">
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource ValueLabel}" Text="{Binding JpegQualityText}" />
+                                        <Slider Minimum="50" Maximum="100" Value="{Binding JpegQuality}" SmallChange="1" LargeChange="5"
+                                                IsSnapToTickEnabled="True" TickFrequency="1" AutomationProperties.Name="JPEG quality" />
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource RowTitle}" Text="JPEG quality" VerticalAlignment="Center" />
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow.Last}">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Content="Change…" Click="OnChooseFolder" AutomationProperties.Name="Change save location" />
+                                            <Button Content="Use default" Margin="8,0,0,0" Click="OnDefaultFolder"
+                                                    IsEnabled="{Binding UsesDefaultFolder, Converter={x:Static v:InvertBool.Instance}}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="0,0,16,0">
+                                            <TextBlock Style="{StaticResource RowTitle}" Text="Save location" />
+                                            <TextBlock Style="{StaticResource RowDesc}" Text="{Binding ScreenshotFolder}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                       ToolTip="{Binding ScreenshotFolder}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                    <Border Style="{StaticResource InlineError}" Visibility="{Binding FolderError, Converter={StaticResource NullToCollapsed}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <v:IconView Geometry="{StaticResource Icon.Alert}" Size="14" Foreground="{DynamicResource Brush.Danger}" />
+                                            <TextBlock Margin="8,0,0,0" Style="{StaticResource Text.Body}" Text="{Binding FolderError}" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- ======== Appearance ======== -->
+                <StackPanel x:Name="PageAppearance" Style="{StaticResource Page}">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="Appearance" />
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Theme" />
+                    <Border Style="{StaticResource Card}">
+                        <Border Style="{StaticResource CardRow.Last}">
+                            <DockPanel>
+                                <Border DockPanel.Dock="Right" Background="{DynamicResource Brush.SurfaceAlt}" CornerRadius="7" Padding="3"
+                                        BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" AutomationProperties.Name="Theme">
+                                        <RadioButton Style="{StaticResource Segment}" GroupName="Theme" Content="System" IsChecked="{Binding ThemeSystem}" />
+                                        <RadioButton Style="{StaticResource Segment}" GroupName="Theme" Content="Light" IsChecked="{Binding ThemeLight}" />
+                                        <RadioButton Style="{StaticResource Segment}" GroupName="Theme" Content="Dark" IsChecked="{Binding ThemeDark}" />
+                                    </StackPanel>
+                                </Border>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource RowTitle}" Text="App theme" />
+                                    <TextBlock Style="{StaticResource RowDesc}" Text="System follows your Windows app mode. High contrast is always respected." />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Preview" />
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource ValueLabel}" Text="{Binding ThumbnailWidthText}" />
+                                        <Slider Minimum="{Binding MinWidth}" Maximum="{Binding MaxWidth}" Value="{Binding ThumbnailWidth}"
+                                                SmallChange="10" LargeChange="20" IsSnapToTickEnabled="True" TickFrequency="10"
+                                                AutomationProperties.Name="Thumbnail width" />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Thumbnail size" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Width of new previews. Scales with your display settings." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource ValueLabel}" Text="{Binding CornerRadiusText}" />
+                                        <Slider Minimum="0" Maximum="{Binding MaxRadius}" Value="{Binding CornerRadius}"
+                                                SmallChange="1" LargeChange="4" IsSnapToTickEnabled="True" TickFrequency="1"
+                                                AutomationProperties.Name="Corner radius" />
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource RowTitle}" Text="Corner radius" VerticalAlignment="Center" />
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <CheckBox DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" IsChecked="{Binding AnimationsEnabled}"
+                                              AutomationProperties.Name="Animations" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Animations" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Turn off for reduced motion. Also off when Windows animation effects are disabled." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow.Last}">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="Show preview" Click="OnShowPreview" VerticalAlignment="Center" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Try it" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Shows your latest screenshot with the current settings." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- ======== Storage ======== -->
+                <StackPanel x:Name="PageStorage" Style="{StaticResource Page}">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="Storage" />
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Screenshot folder" />
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Click="OnOpenFolder" VerticalAlignment="Center" AutomationProperties.Name="Open screenshot folder">
+                                        <StackPanel Orientation="Horizontal">
+                                            <v:IconView Geometry="{StaticResource Icon.Folder}" Size="14" />
+                                            <TextBlock Margin="8,0,0,0" Text="Open" />
+                                        </StackPanel>
+                                    </Button>
+                                    <StackPanel Margin="0,0,16,0">
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Location" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="{Binding ScreenshotFolder}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                   ToolTip="{Binding ScreenshotFolder}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow.Last}">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="Refresh" Click="OnRefreshUsage" VerticalAlignment="Center" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Storage used" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="{Binding UsageText}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Cleanup" />
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding RetentionOptions}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                                              SelectedValue="{Binding RetentionDays}" AutomationProperties.Name="Keep screenshots for" />
+                                    <StackPanel Margin="0,0,16,0">
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Keep screenshots for" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Forever never deletes anything. Otherwise only files SnapFloat created (SnapFloat_….png) are removed." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow.Last}">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Danger}" Content="Clear screenshots…" Click="OnClear" VerticalAlignment="Center" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Clear screenshots" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Permanently deletes all SnapFloat screenshots in this folder, except ones on screen." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- ======== About ======== -->
+                <StackPanel x:Name="PageAbout" Style="{StaticResource Page}">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="About" />
+                    <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+                        <StackPanel>
+                            <Border Style="{StaticResource CardRow}" Padding="16,16">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="pack://application:,,,/SnapFloat;component/Assets/SnapFloat-256.png" Width="48" Height="48"
+                                           RenderOptions.BitmapScalingMode="HighQuality" />
+                                    <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.Subtitle}" Text="SnapFloat" />
+                                        <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding Version}" />
+                                        <TextBlock Style="{StaticResource Text.Secondary}" Text="Floating screenshot previews you can drag anywhere." />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="View license" Click="OnLicense" VerticalAlignment="Center" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="License" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="MIT License. Icons in the style of Lucide (ISC)." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow}" Visibility="{Binding HasRepository, Converter={StaticResource BoolToVis}}">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="Open on GitHub" Click="OnRepository" VerticalAlignment="Center" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Source code" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="{Binding RepositoryUrl}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardRow.Last}">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="Open logs" Click="OnLogs" VerticalAlignment="Center" />
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource RowTitle}" Text="Diagnostics" />
+                                        <TextBlock Style="{StaticResource RowDesc}" Text="Logs contain events and file names only, never image contents." />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="Tips" />
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel Margin="16,14">
+                            <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,6">
+                                <Run FontWeight="SemiBold" Text="Drag" /><Run Text=" a preview into Claude Code, Windows Terminal, VS Code, Explorer or a chat to drop the PNG file." />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,6">
+                                <Run FontWeight="SemiBold" Text="Click" /><Run Text=" for quick actions, " /><Run FontWeight="SemiBold" Text="double-click" /><Run Text=" to open, " /><Run FontWeight="SemiBold" Text="right-click" /><Run Text=" for more." />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource Text.Body}">
+                                <Run Text="If a terminal runs as administrator, Windows blocks drops from normal apps. Use " /><Run FontWeight="SemiBold" Text="Copy file path" /><Run Text=" instead." />
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>

@@ -1,0 +1,63 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Dark palette. Slightly warm greys avoid the flat "pure black" look; text contrast stays above 7:1. -->
+    <Color x:Key="C.Window">#1E1E22</Color>
+    <Color x:Key="C.Sidebar">#19191C</Color>
+    <Color x:Key="C.Surface">#28282D</Color>
+    <Color x:Key="C.SurfaceAlt">#2F2F35</Color>
+    <Color x:Key="C.Text">#F2F2F5</Color>
+    <Color x:Key="C.TextSecondary">#B0B0BA</Color>
+    <Color x:Key="C.TextDisabled">#6E6E78</Color>
+    <Color x:Key="C.Border">#36363D</Color>
+    <Color x:Key="C.BorderStrong">#4A4A53</Color>
+    <Color x:Key="C.Hover">#14FFFFFF</Color>
+    <Color x:Key="C.Pressed">#0CFFFFFF</Color>
+    <Color x:Key="C.Accent">#8E98FF</Color>
+    <Color x:Key="C.AccentHover">#A0A8FF</Color>
+    <Color x:Key="C.AccentPressed">#7D88F2</Color>
+    <Color x:Key="C.AccentText">#12142E</Color>
+    <Color x:Key="C.AccentSubtle">#2C2F52</Color>
+    <Color x:Key="C.AccentForeground">#AEB5FF</Color>
+    <Color x:Key="C.Danger">#FF8A80</Color>
+    <Color x:Key="C.DangerSubtle">#3D2422</Color>
+    <Color x:Key="C.Success">#6CCB8F</Color>
+    <Color x:Key="C.Focus">#F2F2F5</Color>
+    <Color x:Key="C.ToggleOff">#9A9AA4</Color>
+    <!-- Floating preview -->
+    <Color x:Key="C.ThumbBorder">#38FFFFFF</Color>
+    <Color x:Key="C.ThumbShadow">#000000</Color>
+    <Color x:Key="C.Toolbar">#F22A2A30</Color>
+    <Color x:Key="C.ToolbarBorder">#26FFFFFF</Color>
+    <Color x:Key="C.ToolbarText">#F2F2F5</Color>
+    <Color x:Key="C.MenuBackground">#2A2A2F</Color>
+
+    <SolidColorBrush x:Key="Brush.Window" Color="{StaticResource C.Window}" />
+    <SolidColorBrush x:Key="Brush.Sidebar" Color="{StaticResource C.Sidebar}" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource C.Surface}" />
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="{StaticResource C.SurfaceAlt}" />
+    <SolidColorBrush x:Key="Brush.Text" Color="{StaticResource C.Text}" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="{StaticResource C.TextSecondary}" />
+    <SolidColorBrush x:Key="Brush.TextDisabled" Color="{StaticResource C.TextDisabled}" />
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource C.Border}" />
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="{StaticResource C.BorderStrong}" />
+    <SolidColorBrush x:Key="Brush.Hover" Color="{StaticResource C.Hover}" />
+    <SolidColorBrush x:Key="Brush.Pressed" Color="{StaticResource C.Pressed}" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource C.Accent}" />
+    <SolidColorBrush x:Key="Brush.AccentHover" Color="{StaticResource C.AccentHover}" />
+    <SolidColorBrush x:Key="Brush.AccentPressed" Color="{StaticResource C.AccentPressed}" />
+    <SolidColorBrush x:Key="Brush.AccentText" Color="{StaticResource C.AccentText}" />
+    <SolidColorBrush x:Key="Brush.AccentSubtle" Color="{StaticResource C.AccentSubtle}" />
+    <SolidColorBrush x:Key="Brush.AccentForeground" Color="{StaticResource C.AccentForeground}" />
+    <SolidColorBrush x:Key="Brush.Danger" Color="{StaticResource C.Danger}" />
+    <SolidColorBrush x:Key="Brush.DangerSubtle" Color="{StaticResource C.DangerSubtle}" />
+    <SolidColorBrush x:Key="Brush.Success" Color="{StaticResource C.Success}" />
+    <SolidColorBrush x:Key="Brush.Focus" Color="{StaticResource C.Focus}" />
+    <SolidColorBrush x:Key="Brush.ToggleOff" Color="{StaticResource C.ToggleOff}" />
+    <SolidColorBrush x:Key="Brush.ThumbBorder" Color="{StaticResource C.ThumbBorder}" />
+    <SolidColorBrush x:Key="Brush.Toolbar" Color="{StaticResource C.Toolbar}" />
+    <SolidColorBrush x:Key="Brush.ToolbarBorder" Color="{StaticResource C.ToolbarBorder}" />
+    <SolidColorBrush x:Key="Brush.ToolbarText" Color="{StaticResource C.ToolbarText}" />
+    <SolidColorBrush x:Key="Brush.MenuBackground" Color="{StaticResource C.MenuBackground}" />
+    <Color x:Key="Shadow.Color">#000000</Color>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="Shadow.Opacity">0.5</sys:Double>
+</ResourceDictionary>

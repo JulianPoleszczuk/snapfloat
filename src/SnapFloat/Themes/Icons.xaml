@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        Icon geometry on a 24×24 grid, stroke-based (2 px at 24 px), in the style of the Lucide icon set (ISC).
+        Rendered by the IconView control, which scales stroke width with the icon size.
+    -->
+    <Geometry x:Key="Icon.Copy">M10 8 H20 A2 2 0 0 1 22 10 V20 A2 2 0 0 1 20 22 H10 A2 2 0 0 1 8 20 V10 A2 2 0 0 1 10 8 Z M4 16 C2.9 16 2 15.1 2 14 V4 C2 2.9 2.9 2 4 2 H14 C15.1 2 16 2.9 16 4</Geometry>
+    <Geometry x:Key="Icon.Link">M10 13 A5 5 0 0 0 17.54 13.54 L20.54 10.54 A5 5 0 0 0 13.47 3.47 L11.75 5.18 M14 11 A5 5 0 0 0 6.46 10.46 L3.46 13.46 A5 5 0 0 0 10.53 20.53 L12.24 18.82</Geometry>
+    <Geometry x:Key="Icon.Open">M15 3 H21 V9 M10 14 L21 3 M18 13 V19 A2 2 0 0 1 16 21 H5 A2 2 0 0 1 3 19 V8 A2 2 0 0 1 5 6 H11</Geometry>
+    <Geometry x:Key="Icon.Pin">M12 17 V22 M9 10.76 A2 2 0 0 1 7.89 12.55 L6.11 13.45 A2 2 0 0 0 5 15.24 V16 A1 1 0 0 0 6 17 H18 A1 1 0 0 0 19 16 V15.24 A2 2 0 0 0 17.89 13.45 L16.11 12.55 A2 2 0 0 1 15 10.76 V7 A1 1 0 0 1 16 6 A2 2 0 0 0 16 2 H8 A2 2 0 0 0 8 6 A1 1 0 0 1 9 7 Z</Geometry>
+    <Geometry x:Key="Icon.Trash">M3 6 H21 M19 6 V20 C19 21 18 22 17 22 H7 C6 22 5 21 5 20 V6 M8 6 V4 C8 3 9 2 10 2 H14 C15 2 16 3 16 4 V6 M10 11 V17 M14 11 V17</Geometry>
+    <Geometry x:Key="Icon.Close">M18 6 L6 18 M6 6 L18 18</Geometry>
+    <Geometry x:Key="Icon.Check">M20 6 L9 17 L4 12</Geometry>
+    <Geometry x:Key="Icon.Folder">M6 14 L7.5 11.1 A2 2 0 0 1 9.24 10 H20 A2 2 0 0 1 21.94 12.5 L20.4 18.5 A2 2 0 0 1 18.45 20 H4 A2 2 0 0 1 2 18 V5 A2 2 0 0 1 4 3 H7.9 A2 2 0 0 1 9.59 3.9 L10.4 5.1 A2 2 0 0 0 12.07 6 H18 A2 2 0 0 1 20 8 V10</Geometry>
+    <Geometry x:Key="Icon.Sliders">M20 7 H11 M14 17 H5 M14 17 A3 3 0 1 0 20 17 A3 3 0 1 0 14 17 M4 7 A3 3 0 1 0 10 7 A3 3 0 1 0 4 7</Geometry>
+    <Geometry x:Key="Icon.Scan">M3 7 V5 A2 2 0 0 1 5 3 H7 M17 3 H19 A2 2 0 0 1 21 5 V7 M21 17 V19 A2 2 0 0 1 19 21 H17 M7 21 H5 A2 2 0 0 1 3 19 V17</Geometry>
+    <Geometry x:Key="Icon.Contrast">M2 12 A10 10 0 1 0 22 12 A10 10 0 1 0 2 12 M12 18 A6 6 0 0 0 12 6 Z</Geometry>
+    <Geometry x:Key="Icon.Drive">M22 12 H2 M5.45 5.11 L2 12 V18 A2 2 0 0 0 4 20 H20 A2 2 0 0 0 22 18 V12 L18.55 5.11 A2 2 0 0 0 16.76 4 H7.24 A2 2 0 0 0 5.45 5.11 Z M6 16 H6.01 M10 16 H10.01</Geometry>
+    <Geometry x:Key="Icon.Info">M2 12 A10 10 0 1 0 22 12 A10 10 0 1 0 2 12 M12 16 V12 M12 8 H12.01</Geometry>
+    <Geometry x:Key="Icon.Alert">M2 12 A10 10 0 1 0 22 12 A10 10 0 1 0 2 12 M12 8 V12 M12 16 H12.01</Geometry>
+    <Geometry x:Key="Icon.Monitor">M4 3 H20 A2 2 0 0 1 22 5 V15 A2 2 0 0 1 20 17 H4 A2 2 0 0 1 2 15 V5 A2 2 0 0 1 4 3 Z M8 21 H16 M12 17 V21</Geometry>
+    <Geometry x:Key="Icon.Window">M4 4 H20 A2 2 0 0 1 22 6 V18 A2 2 0 0 1 20 20 H4 A2 2 0 0 1 2 18 V6 A2 2 0 0 1 4 4 Z M2 9 H22 M6 6.5 H6.01 M9 6.5 H9.01</Geometry>
+    <Geometry x:Key="Icon.Image">M5 3 H19 A2 2 0 0 1 21 5 V19 A2 2 0 0 1 19 21 H5 A2 2 0 0 1 3 19 V5 A2 2 0 0 1 5 3 Z M7 9 A2 2 0 1 0 11 9 A2 2 0 1 0 7 9 M21 15 L17.91 11.91 A2 2 0 0 0 15.09 11.91 L6 21</Geometry>
+    <Geometry x:Key="Icon.Pause">M14 4 H16 A1 1 0 0 1 17 5 V19 A1 1 0 0 1 16 20 H14 A1 1 0 0 1 13 19 V5 A1 1 0 0 1 14 4 Z M8 4 H10 A1 1 0 0 1 11 5 V19 A1 1 0 0 1 10 20 H8 A1 1 0 0 1 7 19 V5 A1 1 0 0 1 8 4 Z</Geometry>
+    <Geometry x:Key="Icon.Play">M6 3 L20 12 L6 21 Z</Geometry>
+    <Geometry x:Key="Icon.Power">M12 2 V12 M18.4 6.6 A9 9 0 1 1 5.63 6.64</Geometry>
+    <Geometry x:Key="Icon.Clock">M2 12 A10 10 0 1 0 22 12 A10 10 0 1 0 2 12 M12 6 V12 L16 14</Geometry>
+    <Geometry x:Key="Icon.Keyboard">M4 5 H20 A2 2 0 0 1 22 7 V17 A2 2 0 0 1 20 19 H4 A2 2 0 0 1 2 17 V7 A2 2 0 0 1 4 5 Z M6 9 H6.01 M10 9 H10.01 M14 9 H14.01 M18 9 H18.01 M8 13 H8.01 M12 13 H12.01 M16 13 H16.01 M7 16 H17</Geometry>
+    <Geometry x:Key="Icon.Hand">M18 11 V6 A2 2 0 0 0 14 6 M14 10 V4 A2 2 0 0 0 10 4 V6 M10 10.5 V6 A2 2 0 0 0 6 6 V14 M18 8 A2 2 0 1 1 22 8 V14 A8 8 0 0 1 14 22 H12 C9.2 22 7.5 21.14 6.01 19.66 L2.41 16.06 A2 2 0 0 1 5.24 13.23 L7 15</Geometry>
+    <Geometry x:Key="Icon.Pointer">M9 9 L14 22 L16 16 L22 14 Z M4 4 L7 7 M13 4 V2 M4 13 H2</Geometry>
+    <Geometry x:Key="Icon.External">M7 7 H17 V17 M7 17 L17 7</Geometry>
+</ResourceDictionary>
