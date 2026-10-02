@@ -175,6 +175,22 @@ def mask_usage_warning(arr):
         arr[y0:y1, 100:1480] = arr[y0 - 4, 110]   # the terminal's own background colour
 
 
+def write_webp(mp4, path, width, fps, quality):
+    height = round(width * OUT_H / OUT_W / 2) * 2
+    proc = subprocess.Popen(["ffmpeg", "-v", "error", "-i", mp4, "-vf", f"fps={fps},scale={width}:{height}:flags=lanczos",
+                             "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
+    size = width * height * 3
+    frames = []
+    while True:
+        buf = proc.stdout.read(size)
+        if len(buf) < size:
+            break
+        frames.append(Image.frombytes("RGB", (width, height), buf))
+    proc.wait()
+    frames[0].save(path, save_all=True, append_images=frames[1:], duration=round(1000 / fps), loop=0,
+                   quality=quality, method=4, kmin=0, kmax=1, minimize_size=False)
+
+
 # ----------------------------------------------------------------------------------------------- render
 def main():
     take = sys.argv[1]
@@ -246,10 +262,10 @@ def main():
         writer.wait()
         reader.kill()
 
-    # README animation: animated WebP is far smaller than GIF at the same quality, and GitHub renders it inline.
+    # README animation as WebP. Every frame is a keyframe: lossy animated WebP otherwise reuses near-identical
+    # pixels from earlier frames, which leaves blocky "ghosts" of previous content in dark areas.
     webp = os.path.join(out_dir, "demo.webp")
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp4, "-vf", "fps=30,scale=1280:-1:flags=lanczos",
-                    "-c:v", "libwebp_anim", "-lossless", "0", "-quality", "82", "-compression_level", "6", "-loop", "0", webp], check=True)
+    write_webp(mp4, webp, width=1280, fps=24, quality=85)
     poster = os.path.join(out_dir, "demo-poster.png")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{total * 0.62:.2f}", "-i", mp4, "-frames:v", "1", poster], check=True)
     for p in (mp4, webp, poster):

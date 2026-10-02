@@ -4,8 +4,7 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <title>Revenue · Dashboard</title>
-<!-- Demo scene for the README recording: a small dashboard with a visible layout bug (the legend overlaps the
-     chart) so the clip has a real reason to show Claude a screenshot. -->
+<!-- Demo scene for the README recording: a clean revenue dashboard to snip and hand to Claude Code. -->
 <style>
   :root { --ink:#16171d; --muted:#6b6f80; --line:#ececf2; --indigo:#5b5bd6; --indigo2:#8e93ef; --amber:#f2a33a; --teal:#1fb4a3; }
   * { box-sizing:border-box; margin:0; }
@@ -35,15 +34,21 @@
   .tabs { position:absolute; right:18px; top:14px; display:flex; background:#f3f4f8; border-radius:8px; padding:3px; }
   .tabs span { font-size:12px; padding:5px 10px; border-radius:6px; color:var(--muted); }
   .tabs span.on { background:#fff; color:var(--ink); font-weight:600; box-shadow:0 1px 2px #0001; }
-  .chart { height:250px; display:flex; align-items:flex-end; gap:16px; padding:22px 6px 0; border-bottom:1px solid var(--line); }
-  .bar { flex:1; border-radius:7px 7px 3px 3px; background:var(--indigo2); position:relative; }
-  .bar.b { background:var(--indigo); }
-  .bar.hi { background:var(--amber); }
-  /* The bug: the legend is absolutely positioned and sits on top of the bars. */
-  .legend { position:absolute; left:40%; top:96px; display:flex; gap:16px; background:#fff; padding:8px 12px;
-            border-radius:8px; box-shadow:0 2px 10px #0000001a; font-size:12px; color:var(--muted); }
+  .card-head { display:flex; align-items:center; gap:18px; margin-bottom:6px; }
+  .legend { display:flex; gap:14px; font-size:12px; color:var(--muted); }
   .legend i { display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
-  .months { display:flex; gap:16px; padding:8px 6px 0; color:var(--muted); font-size:11.5px; }
+  .plot { display:grid; grid-template-columns:38px 1fr; height:262px; margin-top:12px; }
+  .axis { display:flex; flex-direction:column; justify-content:space-between; font-size:11px; color:#9a9eae; padding-bottom:22px; margin-top:-6px; }
+  .area { position:relative; }
+  .grid { position:absolute; inset:0 0 22px 0; display:flex; flex-direction:column; justify-content:space-between; }
+  .grid div { border-top:1px dashed #ececf3; }
+  .grid div:last-child { border-top:1px solid #e3e4ec; }
+  .bars { position:absolute; inset:0 4px 22px 4px; display:flex; align-items:flex-end; gap:14px; }
+  .bar { flex:1; display:flex; flex-direction:column; justify-content:flex-end; height:100%; }
+  .bar span { display:block; }
+  .bar .r { background:#c9cbf6; border-radius:6px 6px 0 0; }
+  .bar .o { background:var(--indigo); border-radius:0 0 2px 2px; }
+  .months { position:absolute; left:4px; right:4px; bottom:0; display:flex; gap:14px; color:var(--muted); font-size:11.5px; }
   .months span { flex:1; text-align:center; }
 </style>
 </head>
@@ -68,18 +73,32 @@
       <div class="kpi"><small>New customers</small><b>1,284</b><span class="up">▲ 8.7%</span></div>
     </section>
     <section class="card">
-      <h2>Monthly revenue</h2>
-      <div class="tabs"><span>Week</span><span class="on">Month</span><span>Year</span></div>
-      <div class="legend"><span><i style="background:var(--indigo)"></i>Online</span><span><i style="background:var(--indigo2)"></i>Retail</span><span><i style="background:var(--amber)"></i>Best month</span></div>
-      <div class="chart">
-        <div class="bar" style="height:42%"></div><div class="bar b" style="height:55%"></div>
-        <div class="bar" style="height:48%"></div><div class="bar b" style="height:66%"></div>
-        <div class="bar" style="height:58%"></div><div class="bar b" style="height:74%"></div>
-        <div class="bar" style="height:63%"></div><div class="bar hi" style="height:92%"></div>
-        <div class="bar" style="height:70%"></div><div class="bar b" style="height:79%"></div>
-        <div class="bar" style="height:61%"></div><div class="bar b" style="height:84%"></div>
+      <div class="card-head">
+        <h2>Monthly revenue</h2>
+        <div class="legend"><span><i style="background:var(--indigo)"></i>Online</span><span><i style="background:#c9cbf6"></i>Retail</span></div>
       </div>
-      <div class="months"><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span></div>
+      <div class="tabs"><span>Week</span><span class="on">Month</span><span>Year</span></div>
+      <div class="plot">
+        <div class="axis"><span>$60k</span><span>$45k</span><span>$30k</span><span>$15k</span><span>$0</span></div>
+        <div class="area">
+          <div class="grid"><div></div><div></div><div></div><div></div><div></div></div>
+          <div class="bars">
+          <div class="bar"><span class="r" style="height:14%"></span><span class="o" style="height:34%"></span></div>
+          <div class="bar"><span class="r" style="height:15%"></span><span class="o" style="height:38%"></span></div>
+          <div class="bar"><span class="r" style="height:13%"></span><span class="o" style="height:36%"></span></div>
+          <div class="bar"><span class="r" style="height:16%"></span><span class="o" style="height:42%"></span></div>
+          <div class="bar"><span class="r" style="height:17%"></span><span class="o" style="height:41%"></span></div>
+          <div class="bar"><span class="r" style="height:16%"></span><span class="o" style="height:47%"></span></div>
+          <div class="bar"><span class="r" style="height:18%"></span><span class="o" style="height:50%"></span></div>
+          <div class="bar"><span class="r" style="height:19%"></span><span class="o" style="height:55%"></span></div>
+          <div class="bar"><span class="r" style="height:18%"></span><span class="o" style="height:53%"></span></div>
+          <div class="bar"><span class="r" style="height:20%"></span><span class="o" style="height:60%"></span></div>
+          <div class="bar"><span class="r" style="height:21%"></span><span class="o" style="height:63%"></span></div>
+          <div class="bar"><span class="r" style="height:22%"></span><span class="o" style="height:68%"></span></div>
+          </div>
+          <div class="months"><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span></div>
+        </div>
+      </div>
     </section>
   </main>
 </body>
