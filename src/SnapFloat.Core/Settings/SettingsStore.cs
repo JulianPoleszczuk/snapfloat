@@ -68,6 +68,16 @@ public sealed class SettingsStore
             settings.RetentionDays = AppSettings.KeepForever;
             yield return "Migrated v1 settings: retention set to Forever";
         }
+        if (settings.Version < 3
+            && settings.RegionHotkey == "Ctrl+Shift+4"
+            && settings.FullScreenHotkey == "Ctrl+Shift+3"
+            && settings.WindowHotkey == "Ctrl+Shift+5")
+        {
+            // Up to v2 these were the defaults and blocked the same keys in other apps (Excel, VS Code).
+            // Only an untouched set is cleared; shortcuts the user picked are kept.
+            settings.RegionHotkey = settings.FullScreenHotkey = settings.WindowHotkey = "None";
+            yield return "Migrated v2 settings: default shortcuts switched off";
+        }
     }
 
     public void Save(AppSettings settings)

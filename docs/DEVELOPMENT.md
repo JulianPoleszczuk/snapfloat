@@ -153,6 +153,22 @@ Run on Windows 11 (build 26200) with two monitors: 1920×1080 at 125 % and 2560�
 
 Settings are saved to `%LOCALAPPDATA%\SnapFloat\settings.json` shortly after every change. Screenshots go to the
 Windows Screenshots folder (`Pictures\Screenshots`, resolved through the known-folder API so OneDrive redirection is
-honoured). If that folder can't be written, SnapFloat falls back to `%LOCALAPPDATA%\SnapFloat\Screenshots`.
+honoured). If that folder can't be written, SnapFloat falls back to `%LOCALAPPDATA%\SnapFloat\Screenshots`, shows a
+tray notification, and lists those files under *Recent screenshots*. The uninstaller's "remove settings and logs"
+option never deletes that folder.
+
+Snipping Tool saves its own copy of every snip to `Pictures\Screenshots` when its automatic saving is on (the
+default). For snips from Snipping Tool / `Win + Shift + S`, SnapFloat waits up to about 4 s for that file, matches it
+by a SHA-256 of the pixels, switches the preview to it and deletes its own `SnapFloat_…` copy. The copy is kept if it
+was already dragged, copied or opened, because another app may refer to its path. This only happens while
+SnapFloat uses the default folder.
+
+Global shortcuts are off by default (`"None"`): a combination registered with `RegisterHotKey` stops working in every
+other app. Settings from v2 that still had the old defaults (`Ctrl+Shift+4/3/5`) are migrated to `"None"`; shortcuts
+the user changed are kept.
+
+The installer offers "start with Windows" only on the first install. On upgrades the app's own setting is kept. The
+welcome window's checkbox starts from what the installer set (the portable copy suggests "on"). Closing the welcome
+window with its X leaves the startup entry unchanged.
 Automatic cleanup only ever touches files named `SnapFloat_YYYY-MM-DD_HH-mm-ss_fff.png` and never files that are
 currently shown as previews.

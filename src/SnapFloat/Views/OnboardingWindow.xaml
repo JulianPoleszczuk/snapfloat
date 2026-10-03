@@ -46,8 +46,8 @@
                             <Border Style="{StaticResource Key}"><TextBlock Text="Win" FontSize="12" /></Border>
                             <Border Style="{StaticResource Key}"><TextBlock Text="Shift" FontSize="12" /></Border>
                             <Border Style="{StaticResource Key}"><TextBlock Text="S" FontSize="12" /></Border>
-                            <TextBlock Style="{StaticResource Text.Secondary}" Margin="4,1,8,0" Text="as usual, or" />
-                            <Border Style="{StaticResource Key}"><TextBlock x:Name="RegionKeys" Text="Ctrl + Shift + 4" FontSize="12" /></Border>
+                            <TextBlock x:Name="RegionOr" Style="{StaticResource Text.Secondary}" Margin="4,1,8,0" Text="as usual, or" />
+                            <Border x:Name="RegionKeysCap" Style="{StaticResource Key}"><TextBlock x:Name="RegionKeys" FontSize="12" /></Border>
                         </WrapPanel>
                     </StackPanel>
                 </DockPanel>
@@ -76,7 +76,7 @@
             </StackPanel>
         </Border>
 
-        <CheckBox x:Name="StartupCheck" Style="{StaticResource CheckBox.Plain}" Margin="2,20,0,0" IsChecked="True"
+        <CheckBox x:Name="StartupCheck" Style="{StaticResource CheckBox.Plain}" Margin="2,20,0,0"
                   Content="Start SnapFloat when I sign in to Windows" />
         <TextBlock Style="{StaticResource Text.Secondary}" Margin="30,4,0,0"
                    Text="It runs quietly in the notification area. You can change this any time in Settings." />

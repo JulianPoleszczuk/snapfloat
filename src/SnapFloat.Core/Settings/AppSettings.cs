@@ -23,7 +23,7 @@ public enum ClipboardWatchMode
 /// </summary>
 public sealed class AppSettings
 {
-    public const int CurrentVersion = 2;
+    public const int CurrentVersion = 3;
 
     public int Version { get; set; } = CurrentVersion;
     public bool FirstRunCompleted { get; set; }
@@ -38,9 +38,11 @@ public sealed class AppSettings
     public ClipboardWatchMode ClipboardWatchMode { get; set; } = ClipboardWatchMode.ScreenshotTools;
 
     // Capture
-    public string RegionHotkey { get; set; } = "Ctrl+Shift+4";
-    public string FullScreenHotkey { get; set; } = "Ctrl+Shift+3";
-    public string WindowHotkey { get; set; } = "Ctrl+Shift+5";
+    // No global shortcuts by default: any combination SnapFloat registers is taken away from every other app
+    // (Ctrl+Shift+3/4/5 used to break Excel's number formats and VS Code's terminal split). Win+Shift+S always works.
+    public string RegionHotkey { get; set; } = "None";
+    public string FullScreenHotkey { get; set; } = "None";
+    public string WindowHotkey { get; set; } = "None";
     public ScreenshotFormat ImageFormat { get; set; } = ScreenshotFormat.Png;
     public int JpegQuality { get; set; } = 92;
     /// <summary>Null or empty means the Windows Screenshots folder (Pictures\Screenshots).</summary>

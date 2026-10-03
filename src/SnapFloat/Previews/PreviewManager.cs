@@ -94,6 +94,13 @@ internal sealed class PreviewManager : IPreviewHost, IDisposable
         await ShowAsync(shot, cursor.X, cursor.Y, force: true);
     }
 
+    /// <summary>Moves open previews of <paramref name="oldPath"/> over to <paramref name="newPath"/> (same image, other file).</summary>
+    public void Retarget(string oldPath, string newPath)
+    {
+        foreach (var w in _windows.Where(w => !w.IsClosing && string.Equals(w.Screenshot?.Path, oldPath, StringComparison.OrdinalIgnoreCase)))
+            w.Retarget(newPath);
+    }
+
     public void DismissAll()
     {
         foreach (var w in _windows.ToList()) w.Dismiss(fast: true);

@@ -63,14 +63,14 @@ internal sealed class ClipboardWatcher : IDisposable
         var ownerName = OwnerProcessName(out var ownedByUs);
         var expecting = DateTime.UtcNow < _expectSnipUntil;
         var mode = _mode();
-        var accept = ClipboardSourcePolicy.ShouldCapture(mode, ownerName, ownedByUs)
-                     || (expecting && !ownedByUs && ClipboardSourcePolicy.ShouldCapture(ClipboardWatchMode.ScreenshotTools, ownerName, false));
+        var fromScreenshotTool = ClipboardSourcePolicy.ShouldCapture(ClipboardWatchMode.ScreenshotTools, ownerName, ownedByUs);
+        var accept = ClipboardSourcePolicy.ShouldCapture(mode, ownerName, ownedByUs) || (expecting && fromScreenshotTool);
         Log.Debug("Clipboard", "Bitmap on clipboard", ("owner", ownerName ?? "(none)"), ("accepted", accept));
         if (!accept) return;
         if (expecting) _expectSnipUntil = default;
 
         Native.GetCursorPos(out var cursor);
-        _ = ReadWithRetryAsync(sequence, cursor);
+        _ = ReadWithRetryAsync(sequence, cursor, fromScreenshotTool);
     }
 
     private static bool HasBitmap() =>
@@ -98,7 +98,7 @@ internal sealed class ClipboardWatcher : IDisposable
         }
     }
 
-    private async Task ReadWithRetryAsync(uint sequence, Native.POINT cursor)
+    private async Task ReadWithRetryAsync(uint sequence, Native.POINT cursor, bool fromScreenshotTool)
     {
         // The owner may still hold the clipboard open right after notifying; back off briefly.
         for (var attempt = 0; attempt < 8; attempt++)
@@ -107,13 +107,18 @@ internal sealed class ClipboardWatcher : IDisposable
             var bitmap = TryReadBitmap();
             if (bitmap is not null)
             {
-                if (await IsDuplicateAsync(bitmap))
+                var hash = await Task.Run(() => HashPixels(bitmap));
+                if (IsDuplicate(hash))
                 {
                     bitmap.Dispose();
                     Log.Debug("Clipboard", "Duplicate clipboard image ignored");
                     return;
                 }
-                ImageCaptured?.Invoke(new CapturedImage(bitmap, cursor.X, cursor.Y, "clipboard"));
+                ImageCaptured?.Invoke(new CapturedImage(bitmap, cursor.X, cursor.Y, "clipboard")
+                {
+                    FromScreenshotTool = fromScreenshotTool,
+                    PixelHash = hash,
+                });
                 return;
             }
             await Task.Delay(60 + attempt * 60);
@@ -157,9 +162,8 @@ internal sealed class ClipboardWatcher : IDisposable
     }
 
     /// <summary>Snipping Tool sometimes rewrites the clipboard twice for a single snip; drop identical images.</summary>
-    private async Task<bool> IsDuplicateAsync(Bitmap bitmap)
+    private bool IsDuplicate(byte[] hash)
     {
-        var hash = await Task.Run(() => HashPixels(bitmap));
         var now = DateTime.UtcNow;
         var duplicate = _lastHash is not null && now - _lastHashTime < DuplicateWindow && hash.AsSpan().SequenceEqual(_lastHash);
         _lastHash = hash;

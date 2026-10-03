@@ -9,7 +9,16 @@ using SnapFloat.Interop;
 namespace SnapFloat.Services;
 
 /// <summary>A captured image plus where on the desktop it came from (physical pixels), used to pick the monitor.</summary>
-internal sealed record CapturedImage(Bitmap Bitmap, int OriginX, int OriginY, string Source);
+internal sealed record CapturedImage(Bitmap Bitmap, int OriginX, int OriginY, string Source)
+{
+    public DateTime CapturedUtc { get; init; } = DateTime.UtcNow;
+
+    /// <summary>True for snips taken with Snipping Tool / Win+Shift+S, which Windows may also save to disk itself.</summary>
+    public bool FromScreenshotTool { get; init; }
+
+    /// <summary>SHA-256 of the 32-bpp BGRA pixels, when already computed.</summary>
+    public byte[]? PixelHash { get; init; }
+}
 
 /// <summary>
 /// SnapFloat's own capture modes. Region capture deliberately delegates to the native Windows snipping overlay

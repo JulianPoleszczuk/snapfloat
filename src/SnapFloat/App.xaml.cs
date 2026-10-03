@@ -41,6 +41,7 @@ internal partial class App : Application, ITrayCommands, IAppController
     private readonly List<Task> _pendingSaves = [];
     private IReadOnlyDictionary<string, string> _hotkeyFailures = new Dictionary<string, string>();
     private bool _cleanedUp;
+    private bool _fallbackNotified;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -190,7 +191,10 @@ internal partial class App : Application, ITrayCommands, IAppController
         try
         {
             var saved = await save;
+            NotifyIfFallback(saved);
             await _previews.ShowAsync(saved, image.OriginX, image.OriginY);
+            if (image is { FromScreenshotTool: true, PixelHash: { } hash } && _settings.UsesDefaultDirectory)
+                _ = DropWindowsDuplicateAsync(saved, hash, image.CapturedUtc);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Runtime.InteropServices.ExternalException or ArgumentException)
         {
@@ -201,6 +205,41 @@ internal partial class App : Application, ITrayCommands, IAppController
         {
             lock (_pendingSaves) _pendingSaves.Remove(save);
         }
+    }
+
+    /// <summary>
+    /// Snipping Tool saves its own copy of each snip to Pictures\Screenshots (unless that's turned off in its settings),
+    /// which is also SnapFloat's default folder. Once Windows' file shows up, the preview switches to it and SnapFloat's
+    /// identical copy is removed, so every screenshot exists once. A copy that was already dragged, copied or opened
+    /// is kept, because another app may refer to its path.
+    /// </summary>
+    private async Task DropWindowsDuplicateAsync(SavedScreenshot saved, byte[] pixelHash, DateTime capturedUtc)
+    {
+        var windowsCopy = await _store.FindWindowsCopyAsync(pixelHash, saved.PixelWidth, saved.PixelHeight, capturedUtc);
+        if (windowsCopy is null || _cleanedUp) return;
+        if (_store.IsShared(saved.Path))
+        {
+            Log.Info("Store", "Windows saved the same snip; keeping SnapFloat's copy because it is already in use");
+            return;
+        }
+        _previews.Retarget(saved.Path, windowsCopy);
+        if (_store.DeleteDuplicate(saved.Path))
+            Log.Info("Store", "Windows saved the same snip; using its file", ("file", Path.GetFileName(windowsCopy)));
+    }
+
+    /// <summary>Tells the user (once, until saving works again) that screenshots are going to the backup folder.</summary>
+    private void NotifyIfFallback(SavedScreenshot saved)
+    {
+        if (!saved.UsedFallback)
+        {
+            _fallbackNotified = false;
+            return;
+        }
+        if (_fallbackNotified) return;
+        _fallbackNotified = true;
+        _tray.Notify("Screenshot saved to a backup folder",
+            $"Your screenshot folder can't be written right now, so SnapFloat saved to {AppPaths.FallbackScreenshotDirectory}. Click to check the folder in Settings.",
+            warning: true);
     }
 
     private static string DescribeSaveError(Exception ex) => ex switch
@@ -255,17 +294,24 @@ internal partial class App : Application, ITrayCommands, IAppController
 
     private void ShowOnboarding()
     {
-        var onboarding = new OnboardingWindow(_theme, _settings.Current.RegionHotkey);
+        // The installer already asked about starting with Windows; show its answer instead of a fixed default.
+        // The portable copy has had no such question, so it suggests starting with Windows.
+        var suggestStartup = AppPaths.InstalledBySetup ? StartupService.IsEnabled() : true;
+        var onboarding = new OnboardingWindow(_theme, _settings.Current.RegionHotkey, suggestStartup);
         onboarding.Closed += (_, _) =>
         {
-            var start = onboarding.StartWithWindows;
-            StartupService.SetEnabled(start);
+            // Closed because the app is exiting (tray Exit, sign-out, installer/uninstaller): the user hasn't
+            // finished onboarding, so change nothing and show it again next time.
+            if (_cleanedUp) return;
+
+            if (onboarding.Confirmed) StartupService.SetEnabled(onboarding.StartWithWindows);
+            var start = StartupService.IsEnabled();
             _settings.Update(s =>
             {
                 s.FirstRunCompleted = true;
                 s.LaunchAtStartup = start;
             });
-            Log.Info("App", "Onboarding completed", ("startWithWindows", start));
+            Log.Info("App", "Onboarding completed", ("confirmed", onboarding.Confirmed), ("startWithWindows", start));
             if (onboarding.OpenSettingsRequested) OpenSettings();
         };
         onboarding.Show();

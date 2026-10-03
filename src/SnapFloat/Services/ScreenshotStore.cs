@@ -1,12 +1,16 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Security.Cryptography;
+using System.Windows.Media.Imaging;
 using SnapFloat.Core.Diagnostics;
 using SnapFloat.Core.Settings;
 using SnapFloat.Core.Storage;
+using WpfPixelFormats = System.Windows.Media.PixelFormats;
 
 namespace SnapFloat.Services;
 
-internal sealed record SavedScreenshot(string Path, int PixelWidth, int PixelHeight, DateTime CreatedUtc);
+/// <param name="UsedFallback">True when the chosen folder couldn't be written and the file went to the backup folder.</param>
+internal sealed record SavedScreenshot(string Path, int PixelWidth, int PixelHeight, DateTime CreatedUtc, bool UsedFallback = false);
 
 internal readonly record struct StorageUsage(int Count, long Bytes);
 
@@ -18,6 +22,7 @@ internal sealed class ScreenshotStore
 {
     private readonly SettingsService _settings;
     private readonly HashSet<string> _inUse = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _shared = new(StringComparer.OrdinalIgnoreCase);
     private readonly object _gate = new();
 
     public ScreenshotStore(SettingsService settings) => _settings = settings;
@@ -46,7 +51,7 @@ internal sealed class ScreenshotStore
                     // The folder can disappear or be locked (unplugged drive, network share, OneDrive trouble).
                     // Save to SnapFloat's own data folder instead so the screenshot isn't lost, and log it.
                     Log.Warn("Store", "Screenshot folder unavailable, saving to fallback folder", ("error", ex.GetType().Name));
-                    return Write(bitmap, AppPaths.FallbackScreenshotDirectory, settings);
+                    return Write(bitmap, AppPaths.FallbackScreenshotDirectory, settings) with { UsedFallback = true };
                 }
             }
         });
@@ -99,24 +104,106 @@ internal sealed class ScreenshotStore
 
     private HashSet<string> SnapshotInUse() { lock (_gate) return new HashSet<string>(_inUse, StringComparer.OrdinalIgnoreCase); }
 
-    /// <summary>Most recent managed screenshots, newest first.</summary>
+    /// <summary>
+    /// Records that the file left SnapFloat (dragged, copied, opened): another app may now refer to this exact path,
+    /// so it must never be removed as a duplicate.
+    /// </summary>
+    public void MarkShared(string path) { lock (_gate) _shared.Add(path); }
+
+    public bool IsShared(string path) { lock (_gate) return _shared.Contains(path); }
+
+    /// <summary>
+    /// Most recent screenshots, newest first: every image in the screenshot folder (including the ones Windows saves
+    /// there itself) plus any that went to the backup folder.
+    /// </summary>
     public IReadOnlyList<FileInfo> Recent(int count)
+    {
+        var files = new List<FileInfo>();
+        foreach (var directory in new[] { Directory, AppPaths.FallbackScreenshotDirectory }.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var dir = new DirectoryInfo(directory);
+                if (dir.Exists) files.AddRange(dir.EnumerateFiles().Where(f => IsImageFile(f.Name)));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+            {
+                Log.Warn("Store", "Could not list screenshots", ("error", ex.GetType().Name));
+            }
+        }
+        return files.OrderByDescending(f => f.LastWriteTimeUtc).Take(count).ToList();
+    }
+
+    private static bool IsImageFile(string name) =>
+        name.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+        name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+        name.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Snipping Tool also saves every snip to the Windows Screenshots folder ("Screenshot 2026-10-03 120000.png") when
+    /// its automatic saving is on, which is the default. Waits a few seconds for that file and returns it when its
+    /// pixels hash to <paramref name="pixelHash"/> (SHA-256 of the 32-bpp BGRA pixels), or null if none appears.
+    /// </summary>
+    public async Task<string?> FindWindowsCopyAsync(byte[] pixelHash, int width, int height, DateTime capturedUtc)
+    {
+        var directory = AppPaths.DefaultScreenshotDirectory;
+        var notBefore = capturedUtc - TimeSpan.FromSeconds(5);
+        for (var attempt = 0; attempt < 16; attempt++) // about 4 s; Snipping Tool usually writes within 1 s
+        {
+            await Task.Delay(250);
+            var match = await Task.Run(() => FindByPixels(directory, pixelHash, width, height, notBefore));
+            if (match is not null) return match;
+        }
+        return null;
+    }
+
+    private static string? FindByPixels(string directory, byte[] pixelHash, int width, int height, DateTime notBeforeUtc)
     {
         try
         {
-            var dir = new DirectoryInfo(Directory);
-            if (!dir.Exists) return [];
-            return dir.EnumerateFiles(ScreenshotFiles.Prefix + "*")
-                .Where(f => ScreenshotFiles.IsManagedFileName(f.Name))
-                .OrderByDescending(f => f.LastWriteTimeUtc)
-                .Take(count)
-                .ToList();
+            var dir = new DirectoryInfo(directory);
+            if (!dir.Exists) return null;
+            foreach (var file in dir.EnumerateFiles("*.png"))
+            {
+                if (file.LastWriteTimeUtc < notBeforeUtc || ScreenshotFiles.IsManagedFileName(file.Name)) continue;
+                if (HashPixels(file.FullName, width, height) is { } hash && hash.AsSpan().SequenceEqual(pixelHash))
+                    return file.FullName;
+            }
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException) { }
+        return null;
+    }
+
+    /// <summary>SHA-256 of the image's BGRA32 pixels; null if it can't be read yet (still being written) or has another size.</summary>
+    private static byte[]? HashPixels(string path, int width, int height)
+    {
+        try
         {
-            Log.Warn("Store", "Could not list screenshots", ("error", ex.GetType().Name));
-            return [];
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var frame = BitmapDecoder.Create(fs, BitmapCreateOptions.IgnoreColorProfile, BitmapCacheOption.OnLoad).Frames[0];
+            if (frame.PixelWidth != width || frame.PixelHeight != height) return null;
+            var bgra = new FormatConvertedBitmap(frame, WpfPixelFormats.Bgra32, null, 0);
+            var stride = width * 4;
+            var pixels = new byte[stride * height];
+            bgra.CopyPixels(pixels, stride, 0);
+            return SHA256.HashData(pixels);
         }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or NotSupportedException
+                                       or FileFormatException or ArgumentException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>Removes SnapFloat's own copy of a screenshot that Windows also saved. Never touches shared or in-use files.</summary>
+    public bool DeleteDuplicate(string path)
+    {
+        if (!ScreenshotFiles.IsManagedFileName(System.IO.Path.GetFileName(path))) return false;
+        lock (_gate)
+        {
+            if (_shared.Contains(path) || _inUse.Contains(path)) return false;
+        }
+        return TryDelete(path);
     }
 
     public StorageUsage GetUsage()
