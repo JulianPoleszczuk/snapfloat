@@ -63,12 +63,10 @@ Works on Windows 10 and 11 (64-bit).
 | **Double-click** | Opens the image |
 | **Right-click** | More options |
 
-| Shortcut | What it does |
-|---|---|
-| <kbd>Win</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> | Snip with Windows, as usual |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>4</kbd> | Snip a region |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>3</kbd> | Capture the whole screen |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>5</kbd> | Capture the active window |
+Take screenshots with <kbd>Win</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>, as usual. SnapFloat can also capture the whole
+screen or the active window with its own shortcuts. They are off by default, so SnapFloat never takes a key
+combination away from your other apps; set them under **Settings → Capture**. The full-screen capture is also in the
+tray menu.
 
 You can change the shortcuts, how long previews stay, which corner they appear in, the theme and where screenshots are
 saved. Open **Settings** from the SnapFloat icon next to the clock.
@@ -92,7 +90,8 @@ Dropping pastes a Windows path, which WSL can't open directly. Use <b>Copy image
 <details>
 <summary><b>Where are my screenshots?</b></summary>
 <br>
-In <code>Pictures\Screenshots</code>. Right-click any preview and choose <b>Show in folder</b>.
+In <code>Pictures\Screenshots</code>. Right-click any preview and choose <b>Show in folder</b>. When Snipping Tool
+saves the snip there itself (its default), SnapFloat uses that file instead of adding a second copy.
 </details>
 
 <details>

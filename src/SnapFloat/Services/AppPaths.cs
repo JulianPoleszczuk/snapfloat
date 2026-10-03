@@ -47,6 +47,16 @@ internal static class AppPaths
 
     public static string ExecutablePath => Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, "SnapFloat.exe");
 
+    /// <summary>True when running from an installer-made copy (Inno Setup puts unins000.exe next to the app), not the portable zip.</summary>
+    public static bool InstalledBySetup
+    {
+        get
+        {
+            try { return Directory.EnumerateFiles(AppContext.BaseDirectory, "unins*.exe").Any(); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; }
+        }
+    }
+
     public static string Version
     {
         get

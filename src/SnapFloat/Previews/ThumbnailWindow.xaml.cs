@@ -94,9 +94,31 @@ internal partial class ThumbnailWindow : Window
         }
         w.SetCardSize(new Size(size.Width, size.Height));
         w.ContextMenu = w.BuildContextMenu();
-        AutomationPropertiesHelper.SetName(w.Card, $"Screenshot {System.IO.Path.GetFileName(shot.Path)}. Drag to drop the file, click for actions, double-click to open.");
+        w.DescribeFile();
         host.Store.Retain(shot.Path);
         return w;
+    }
+
+    /// <summary>
+    /// Points the preview at another file with the same image (Windows' own copy of the snip) so SnapFloat's
+    /// duplicate can be removed. The caller makes sure the old file was never handed to another app.
+    /// </summary>
+    public void Retarget(string path)
+    {
+        if (Screenshot is null || _closing) return;
+        _host.Store.Release(Screenshot.Path);
+        Screenshot = Screenshot with { Path = path };
+        _host.Store.Retain(path);
+        DescribeFile();
+    }
+
+    private void DescribeFile() =>
+        AutomationPropertiesHelper.SetName(Card, $"Screenshot {System.IO.Path.GetFileName(Screenshot!.Path)}. Drag to drop the file, click for actions, double-click to open.");
+
+    /// <summary>Called before the file's path leaves SnapFloat (drag, copy, open), after which it must stay on disk.</summary>
+    private void MarkShared()
+    {
+        if (Screenshot is not null) _host.Store.MarkShared(Screenshot.Path);
     }
 
     public static ThumbnailWindow ForError(IPreviewHost host, string title, string detail, PreviewOptions options)
@@ -376,6 +398,7 @@ internal partial class ThumbnailWindow : Window
     {
         if (Screenshot is null || !EnsureFileExists()) return;
 
+        MarkShared();
         ScheduleDismiss(_schedule.Hold(HoldReason.Drag));
         SetToolbarVisible(false);
         Root.BeginAnimation(OpacityProperty, null);
@@ -419,6 +442,7 @@ internal partial class ThumbnailWindow : Window
     private async Task CopyImageAsync()
     {
         if (Screenshot is null || !EnsureFileExists()) return;
+        MarkShared(); // the copy also carries the file itself (CF_HDROP)
         var ok = await ClipboardService.CopyImageAsync(Screenshot.Path);
         ShowStatus(ok ? "Image copied" : "Clipboard busy, try again", error: !ok);
     }
@@ -428,6 +452,7 @@ internal partial class ThumbnailWindow : Window
     private async Task CopyPathAsync()
     {
         if (Screenshot is null || !EnsureFileExists()) return;
+        MarkShared();
         var ok = await ClipboardService.CopyTextAsync(Screenshot.Path);
         ShowStatus(ok ? "Path copied" : "Clipboard busy, try again", error: !ok);
     }
@@ -437,6 +462,7 @@ internal partial class ThumbnailWindow : Window
     private void OpenFile()
     {
         if (Screenshot is null || !EnsureFileExists()) return;
+        MarkShared();
         try
         {
             Process.Start(new ProcessStartInfo(Screenshot.Path) { UseShellExecute = true })?.Dispose();
@@ -451,6 +477,7 @@ internal partial class ThumbnailWindow : Window
     private void OpenFolder()
     {
         if (Screenshot is null || !EnsureFileExists()) return;
+        MarkShared();
         try
         {
             Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{Screenshot.Path}\"") { UseShellExecute = true })?.Dispose();

@@ -139,6 +139,36 @@ public sealed class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void Version_2_default_shortcuts_are_switched_off()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(FilePath, """{ "Version": 2, "RegionHotkey": "Ctrl+Shift+4", "FullScreenHotkey": "Ctrl+Shift+3", "WindowHotkey": "Ctrl+Shift+5" }""");
+        var s = new SettingsStore(FilePath).Load();
+        Assert.Equal("None", s.RegionHotkey);
+        Assert.Equal("None", s.FullScreenHotkey);
+        Assert.Equal("None", s.WindowHotkey);
+    }
+
+    [Fact]
+    public void Version_2_custom_shortcuts_are_kept()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(FilePath, """{ "Version": 2, "RegionHotkey": "Ctrl+Shift+4", "FullScreenHotkey": "Ctrl+Alt+F", "WindowHotkey": "Ctrl+Shift+5" }""");
+        var s = new SettingsStore(FilePath).Load();
+        Assert.Equal("Ctrl+Shift+4", s.RegionHotkey);
+        Assert.Equal("Ctrl+Alt+F", s.FullScreenHotkey);
+    }
+
+    [Fact]
+    public void Shortcuts_are_off_by_default()
+    {
+        var s = new AppSettings();
+        Assert.True(Input.Hotkey.Parse(s.RegionHotkey).IsEmpty);
+        Assert.True(Input.Hotkey.Parse(s.FullScreenHotkey).IsEmpty);
+        Assert.True(Input.Hotkey.Parse(s.WindowHotkey).IsEmpty);
+    }
+
+    [Fact]
     public void Current_version_retention_choice_is_preserved()
     {
         var store = new SettingsStore(FilePath);

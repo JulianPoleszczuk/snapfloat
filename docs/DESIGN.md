@@ -75,7 +75,7 @@ shortcut recorder, a segmented theme picker, and buttons. Inline errors use a ti
 520 DIP wide, shown on first run only. It shows the app mark and "SnapFloat is ready", then three steps in a card,
 each with an icon badge:
 
-1. Take a screenshot, with key caps for Win + Shift + S and the region shortcut.
+1. Take a screenshot, with key caps for Win + Shift + S and, if one is set, the region shortcut.
 2. Drag the preview.
 3. Click for quick actions.
 
